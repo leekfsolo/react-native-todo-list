@@ -1,11 +1,19 @@
 import React, {useState} from 'react';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {StyleSheet, Text, View} from 'react-native';
 import CButton from '../components/CButton/CButton';
 import NoContent from '../components/NoContent/NoContent';
+import {MainStackParamList} from '../routes';
 import {Task} from '../utils/model';
 
-const MyTasks = () => {
+type Props = NativeStackScreenProps<MainStackParamList>;
+
+const MyTasks = ({navigation}: Props) => {
   const [tasks, setTasks] = useState<Array<Task>>([]);
+
+  const handleNavigate = (screen: keyof MainStackParamList) => {
+    navigation.navigate(screen);
+  };
 
   return (
     <View style={styles.body}>
@@ -22,7 +30,7 @@ const MyTasks = () => {
         />
       )}
 
-      <CButton />
+      <CButton handleNavigate={handleNavigate} />
     </View>
   );
 };

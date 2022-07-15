@@ -1,4 +1,5 @@
 import React from 'react';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {RFValue} from 'react-native-responsive-fontsize';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -7,59 +8,80 @@ import MyTasks from '../screens/MyTasks';
 import DoneTasks from '../screens/DoneTasks';
 import {StyleSheet} from 'react-native';
 import {Colors} from 'react-native-paper';
+import NewTask from '../screens/NewTask';
 
 export type RootStackParamList = {
-  MyTasks: undefined;
+  MainTasks: undefined;
   DoneTasks: undefined;
-  AddTasks: undefined;
+};
+
+export type MainStackParamList = {
+  MyTasks: undefined;
+  NewTask: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
+const MainStack = createNativeStackNavigator<MainStackParamList>();
+
+const MainScreen = () => {
+  return (
+    <Tab.Navigator
+      screenOptions={({route}) => ({
+        tabBarActiveTintColor: Colors.blue700,
+        tabBarInactiveTintColor: Colors.grey500,
+        headerStyle: styles.header,
+        headerTintColor: Colors.white,
+        headerTitleAlign: 'center',
+        headerTitleStyle: styles.headerTitle,
+        tabBarStyle: {height: 70},
+        tabBarItemStyle: {paddingVertical: 10},
+        tabBarLabelStyle: {fontSize: RFValue(12)},
+        tabBarIcon: ({focused, color}) => {
+          const icons = {
+            MainTasks: 'assignment',
+            DoneTasks: 'assignment-turned-in',
+          };
+
+          return (
+            <MaterialIcons
+              name={icons[route.name]}
+              color={color}
+              size={focused ? RFValue(30) : RFValue(25)}
+            />
+          );
+        },
+      })}
+      initialRouteName="MainTasks">
+      <Tab.Screen
+        name="MainTasks"
+        component={MyTasks}
+        options={{title: 'My Tasks'}}
+      />
+      <Tab.Screen
+        name="DoneTasks"
+        component={DoneTasks}
+        options={{title: 'Done Tasks'}}
+      />
+    </Tab.Navigator>
+  );
+};
 
 const Routes = () => {
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({route}) => ({
-          tabBarActiveTintColor: Colors.blue700,
-          tabBarInactiveTintColor: Colors.grey500,
-          headerStyle: styles.header,
-          headerTintColor: Colors.white,
-          headerTitleAlign: 'center',
-          headerTitleStyle: styles.headerTitle,
-          tabBarStyle: {height: 70},
-          tabBarItemStyle: {paddingVertical: 10},
-          tabBarLabelStyle: {fontSize: RFValue(12)},
-          tabBarIcon: ({focused, color}) => {
-            if (route.name === 'AddTasks') {
-              return null;
-            }
-            const icons = {
-              MyTasks: 'assignment',
-              DoneTasks: 'assignment-turned-in',
-            };
-
-            return (
-              <MaterialIcons
-                name={icons[route.name]}
-                color={color}
-                size={focused ? RFValue(30) : RFValue(25)}
-              />
-            );
-          },
-        })}
-        initialRouteName="MyTasks">
-        <Tab.Screen
+      <MainStack.Navigator>
+        <MainStack.Screen
           name="MyTasks"
-          component={MyTasks}
-          options={{title: 'My Tasks'}}
+          component={MainScreen}
+          options={{title: 'My Tasks', headerShown: false}}
         />
-        <Tab.Screen
-          name="DoneTasks"
-          component={DoneTasks}
-          options={{title: 'Done Tasks'}}
+
+        <MainStack.Screen
+          name="NewTask"
+          component={NewTask}
+          options={{title: 'New Task'}}
         />
-      </Tab.Navigator>
+      </MainStack.Navigator>
     </NavigationContainer>
   );
 };

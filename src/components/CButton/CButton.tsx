@@ -2,10 +2,19 @@ import React from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {Colors} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {MainStackParamList} from '../../routes';
 
-const CButton = () => {
+type Props = {
+  handleNavigate: (screen: keyof MainStackParamList) => void;
+};
+
+const CButton = (props: Props) => {
+  const {handleNavigate} = props;
+
   return (
-    <TouchableOpacity style={styles.button}>
+    <TouchableOpacity
+      style={styles.button}
+      onPress={() => handleNavigate('NewTask')}>
       <MaterialIcons name="add" size={32} color={Colors.white} />
     </TouchableOpacity>
   );
