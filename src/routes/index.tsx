@@ -2,7 +2,6 @@ import React from 'react';
 import {RFValue} from 'react-native-responsive-fontsize';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-// import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import MyTasks from '../screens/MyTasks';
 import DoneTasks from '../screens/DoneTasks';
@@ -24,10 +23,13 @@ const Routes = () => {
         screenOptions={({route}) => ({
           tabBarActiveTintColor: Colors.blue700,
           tabBarInactiveTintColor: Colors.grey500,
-          headerStyle: styles.headerStyle,
+          headerStyle: styles.header,
           headerTintColor: Colors.white,
           headerTitleAlign: 'center',
-          headerTitleStyle: styles.headerTitleStyle,
+          headerTitleStyle: styles.headerTitle,
+          tabBarStyle: {height: 70},
+          tabBarItemStyle: {paddingVertical: 10},
+          tabBarLabelStyle: {fontSize: RFValue(12)},
           tabBarIcon: ({focused, color}) => {
             if (route.name === 'AddTasks') {
               return null;
@@ -41,7 +43,7 @@ const Routes = () => {
               <MaterialIcons
                 name={icons[route.name]}
                 color={color}
-                size={focused ? RFValue(25) : RFValue(20)}
+                size={focused ? RFValue(30) : RFValue(25)}
               />
             );
           },
@@ -63,10 +65,10 @@ const Routes = () => {
 };
 
 const styles = StyleSheet.create({
-  headerStyle: {
+  header: {
     backgroundColor: Colors.blue700,
   },
-  headerTitleStyle: {
+  headerTitle: {
     fontWeight: '700',
   },
 });
