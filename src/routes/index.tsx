@@ -79,7 +79,7 @@ const Routes = () => {
         <MainStack.Screen
           name="NewTask"
           component={NewTask}
-          options={{title: 'New Task'}}
+          options={{title: ''}}
         />
       </MainStack.Navigator>
     </NavigationContainer>

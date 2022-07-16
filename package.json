@@ -11,10 +11,12 @@
     "windows": "react-native run-windows"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.17.7",
     "@react-navigation/bottom-tabs": "^6.3.2",
     "@react-navigation/material-bottom-tabs": "^6.2.2",
     "@react-navigation/native": "^6.0.11",
     "@react-navigation/native-stack": "^6.7.0",
+    "fbemitter": "^3.0.0",
     "react": "18.0.0",
     "react-native": "0.69.1",
     "react-native-paper": "^4.12.2",
@@ -29,6 +31,7 @@
     "@babel/runtime": "^7.12.5",
     "@react-native-community/eslint-config": "^2.0.0",
     "@tsconfig/react-native": "^2.0.0",
+    "@types/fbemitter": "^2.0.32",
     "@types/jest": "^26.0.23",
     "@types/react-native": "^0.69.1",
     "@types/react-native-vector-icons": "^6.4.11",

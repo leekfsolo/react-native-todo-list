@@ -1,4 +1,5 @@
 export interface Task {
-  name: string;
-  isDone: boolean;
+  title: string;
+  description: string;
+  isDone?: boolean;
 }
