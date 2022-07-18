@@ -15,10 +15,7 @@ export const dateTimeReducer = (state: DateTime, action: DateTimeAction) => {
   }
 };
 
-export const addTaskReducer = async (
-  state: Array<Task>,
-  action: TaskAction,
-) => {
+export const taskReducer = (state: Array<Task>, action: TaskAction) => {
   const {type, payload, storage = []} = action;
   const {id} = payload;
 
@@ -28,12 +25,12 @@ export const addTaskReducer = async (
 
     case TaskActionType.ADD:
       const addTasks = [...state, payload];
-      await AsyncStorage.setItem('tasks', JSON.stringify(addTasks));
+      AsyncStorage.setItem('tasks', JSON.stringify(addTasks));
       return addTasks;
 
     case TaskActionType.DELETE:
       const deleteTasks = state.filter(task => task.id !== id);
-      await AsyncStorage.setItem('tasks', JSON.stringify(deleteTasks));
+      AsyncStorage.setItem('tasks', JSON.stringify(deleteTasks));
       return deleteTasks;
 
     case TaskActionType.TOGGLE:
@@ -43,17 +40,12 @@ export const addTaskReducer = async (
         }
         return task;
       });
-      await AsyncStorage.setItem('tasks', JSON.stringify(toggleTasks));
+      AsyncStorage.setItem('tasks', JSON.stringify(toggleTasks));
       return toggleTasks;
 
     case TaskActionType.DELETECOMPLETED:
       const deleteCompletedTasks = state.filter(task => !task.isDone);
-      await AsyncStorage.setItem('tasks', JSON.stringify(deleteCompletedTasks));
+      AsyncStorage.setItem('tasks', JSON.stringify(deleteCompletedTasks));
       return deleteCompletedTasks;
   }
-};
-
-export const initDateTime: DateTime = {
-  date: new Date(),
-  time: '12:00',
 };

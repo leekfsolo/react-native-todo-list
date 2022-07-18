@@ -1,6 +1,6 @@
 export enum MODE {
-  DATE = 'DATE',
-  TIME = 'TIME',
+  DATE = 'date',
+  TIME = 'time',
 }
 
 export enum TaskActionType {

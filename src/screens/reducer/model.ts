@@ -2,7 +2,7 @@ import {TaskActionType, MODE} from './enum';
 
 export interface DateTime {
   date: Date;
-  time: string;
+  time: Date;
 }
 export interface DateTimeAction {
   type: MODE;
@@ -12,7 +12,7 @@ export interface DateTimeAction {
 export interface Task {
   title: string;
   date: Date;
-  time: string;
+  time: Date;
   isDone: boolean;
   id: string;
 }

@@ -1,17 +1,21 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useReducer} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {StyleSheet, Text, View} from 'react-native';
-import CButton from '../components/CButton/CButton';
-import NoContent from '../components/NoContent/NoContent';
+import CButton from '../components/CButton';
+import NoContent from '../components/NoContent';
 import {MainStackParamList} from '../routes';
 import {Task} from './reducer/model';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CEvent from '../utils/CEvent';
+import {taskReducer} from './reducer';
+import {TaskActionType} from './reducer/enum';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {generateRandomId} from '../utils/helper';
 
+const initTasks: Array<Task> = [];
 type Props = NativeStackScreenProps<MainStackParamList>;
 
 const MyTasks = ({navigation}: Props) => {
-  const [tasks, setTasks] = useState<Array<Task>>([]);
+  const [tasks, setTasks] = useReducer(taskReducer, initTasks);
 
   const handleNavigate = (screen: keyof MainStackParamList) => {
     navigation.navigate(screen);
@@ -19,11 +23,19 @@ const MyTasks = ({navigation}: Props) => {
 
   useEffect(() => {
     const getTasks = async () => {
-      const jsonData = await AsyncStorage.getItem('tasks');
-      await AsyncStorage.clear();
-      if (jsonData) {
-        const data: Array<Task> = JSON.parse(jsonData);
-        setTasks(data);
+      const jsonTasksValue = await AsyncStorage.getItem('tasks');
+      if (jsonTasksValue) {
+        setTasks({
+          type: TaskActionType.GET,
+          payload: {
+            id: generateRandomId(),
+            isDone: false,
+            title: 'test',
+            time: new Date(),
+            date: new Date(),
+          },
+          storage: JSON.parse(jsonTasksValue),
+        });
       }
     };
 
@@ -32,9 +44,7 @@ const MyTasks = ({navigation}: Props) => {
 
   useEffect(() => {
     const handleAddTask = (task: Task) =>
-      setTasks(prevTasks => {
-        return [task, ...prevTasks];
-      });
+      setTasks({type: TaskActionType.ADD, payload: task});
     CEvent.addListener('addTask', handleAddTask);
 
     return CEvent.addListener('addTask', handleAddTask).remove();

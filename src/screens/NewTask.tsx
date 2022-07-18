@@ -1,6 +1,5 @@
 import React, {useReducer, useState} from 'react';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {
   Alert,
@@ -9,46 +8,44 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import {MainStackParamList} from '../routes';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {Colors} from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {DateTime, Task} from './reducer/model';
 import CEvent from '../utils/CEvent';
 import {dateTimeReducer} from './reducer';
+import CDateTimePicker from '../components/CDateTimePicker';
+import {MODE} from './reducer/enum';
+import {formatDate, generateRandomId} from '../utils/helper';
 
 const initDateTime: DateTime = {
   date: new Date(),
-  time: '12:00',
+  time: new Date(),
 };
 
 type Props = NativeStackScreenProps<MainStackParamList, 'NewTask'>;
 
 const NewTask = ({navigation}: Props) => {
   const [title, setTitle] = useState<string>('');
+  const [isDateTouched, setIsDateTouched] = useState<boolean>(false);
+  const [show, setShow] = useState<boolean>(false);
+  const [mode, setMode] = useState<MODE>(MODE.DATE);
   const [dateTime, setDateTime] = useReducer(dateTimeReducer, initDateTime);
 
   const handleSubmit = async () => {
     const task: Task = {
       title,
+      id: generateRandomId(),
+      isDone: false,
+      time: dateTime.time,
+      date: dateTime.date,
     };
 
     try {
-      const prevJsonTasks = await AsyncStorage.getItem('tasks');
-      await AsyncStorage.clear();
-
-      if (prevJsonTasks === null) {
-        await AsyncStorage.setItem('tasks', JSON.stringify([task]));
-      } else {
-        const prevTasks = await AsyncStorage.getItem('tasks');
-        if (prevTasks) {
-          const currentTasks = [task, ...JSON.parse(prevTasks)];
-          await AsyncStorage.setItem('tasks', JSON.stringify(currentTasks));
-        }
-      }
       CEvent.emit('addTask', task);
     } catch (e: any) {
       Alert.alert('Error', e.message, [{text: 'Ok'}]);
@@ -71,7 +68,24 @@ const NewTask = ({navigation}: Props) => {
             value={title}
             onChangeText={value => setTitle(value)}
           />
-          <DateTimePicker value={new Date()} mode="date" display="default" />
+          <TouchableOpacity
+            onPress={() => setShow(true)}
+            style={styles.selectDate}>
+            <Text style={styles.dateText}>
+              {isDateTouched ? formatDate(dateTime) : 'Select due date'}
+            </Text>
+            {show && (
+              <CDateTimePicker
+                date={dateTime.date}
+                mode={mode}
+                setMode={setMode}
+                setShow={setShow}
+                setDateTime={setDateTime}
+                dateTime={dateTime}
+                setIsDateTouched={setIsDateTouched}
+              />
+            )}
+          </TouchableOpacity>
           <Pressable
             onPress={handleSubmit}
             style={({pressed}) => [
@@ -98,6 +112,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontWeight: '700',
     fontSize: RFValue(20),
+    textAlign: 'center',
   },
   container: {
     flex: 1,
@@ -112,19 +127,22 @@ const styles = StyleSheet.create({
     color: Colors.blue900,
     fontWeight: '700',
   },
+  selectDate: {
+    backgroundColor: Colors.white,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    marginBottom: 20,
+    borderRadius: 5,
+  },
   titleInput: {
     backgroundColor: Colors.white,
     paddingHorizontal: 20,
+    paddingVertical: 15,
     marginBottom: 20,
     fontSize: RFValue(16),
     borderRadius: 5,
   },
-  descriptionInput: {
-    backgroundColor: Colors.white,
-    paddingHorizontal: 20,
-    textAlignVertical: 'top',
-    marginBottom: 20,
+  dateText: {
     fontSize: RFValue(16),
-    borderRadius: 5,
   },
 });
