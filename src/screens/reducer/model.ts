@@ -1,18 +1,20 @@
 import {TaskActionType, MODE} from './enum';
 
+export type CDate = Date | null;
+
 export interface DateTime {
-  date: Date;
-  time: Date;
+  date: CDate;
+  time: CDate;
 }
 export interface DateTimeAction {
   type: MODE;
-  payload: DateTime;
+  payload: CDate;
 }
 
 export interface Task {
   title: string;
-  date: Date;
-  time: Date;
+  date: CDate;
+  time: CDate;
   isDone: boolean;
   id: string;
 }

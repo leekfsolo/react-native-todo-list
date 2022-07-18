@@ -1,71 +1,46 @@
 import React, {Dispatch} from 'react';
 
-import {Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Platform, StyleSheet, TouchableOpacity} from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import {Colors} from 'react-native-paper';
 import {MODE} from '../../screens/reducer/enum';
-import {DateTime, DateTimeAction} from '../../screens/reducer/model';
+import {CDate, DateTime, DateTimeAction} from '../../screens/reducer/model';
 
 type Props = {
-  date: Date;
+  date: CDate;
   mode: MODE;
-  setMode: (mode: MODE) => void;
   setShow: (show: boolean) => void;
   setDateTime: Dispatch<DateTimeAction>;
-  setIsDateTouched: (isDateTouched: boolean) => void;
   dateTime: DateTime;
 };
 
 const CDateTimePicker = (props: Props) => {
-  const {
-    date,
-    setDateTime,
-    mode,
-    setMode,
-    setShow,
-    dateTime,
-    setIsDateTouched,
-  } = props;
+  const {date, setDateTime, mode, setShow, dateTime} = props;
 
   const onChange = (event: DateTimePickerEvent, selectedValue?: Date) => {
-    setShow(Platform.OS === 'ios');
-    setIsDateTouched(true);
     if (mode === MODE.DATE) {
       const currentDate = selectedValue || dateTime.date;
+      setShow(false);
       setDateTime({
         type: MODE.DATE,
-        payload: {date: new Date(currentDate), time: dateTime.time},
+        payload: currentDate,
       });
-      setMode(MODE.TIME);
-      setShow(Platform.OS !== 'ios');
     } else {
       const currentTime = selectedValue || dateTime.time;
+      setShow(false);
       setDateTime({
         type: MODE.TIME,
-        payload: {time: currentTime, date: dateTime.date},
+        payload: currentTime,
       });
-      setMode(MODE.DATE);
-      setShow(Platform.OS === 'ios');
     }
   };
 
-  const onClose = () => {
-    setShow(false);
-  };
-
   return (
-    <TouchableOpacity onPress={() => onClose()} style={styles.container}>
-      {Platform.OS === 'ios' && (
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => onClose()}>
-            <Text style={styles.headerText}>Done</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+    <TouchableOpacity onPress={() => setShow(false)} style={styles.container}>
       <DateTimePicker
-        value={date}
+        value={date || new Date()}
         mode={mode}
         display="default"
         onChange={onChange}
@@ -82,15 +57,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  header: {
-    width: '100%',
-    padding: 16,
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-    backgroundColor: Colors.white,
-    borderBottomWidth: 1,
-    borderColor: Colors.grey200,
-  },
+
   headerText: {color: Colors.amber100, fontSize: 18},
 });
 

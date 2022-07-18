@@ -24,6 +24,7 @@ const MyTasks = ({navigation}: Props) => {
   useEffect(() => {
     const getTasks = async () => {
       const jsonTasksValue = await AsyncStorage.getItem('tasks');
+      await AsyncStorage.clear();
       if (jsonTasksValue) {
         setTasks({
           type: TaskActionType.GET,

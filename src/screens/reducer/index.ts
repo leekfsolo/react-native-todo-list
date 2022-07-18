@@ -4,14 +4,13 @@ import {TaskAction, DateTime, DateTimeAction, Task} from './model';
 
 export const dateTimeReducer = (state: DateTime, action: DateTimeAction) => {
   const {type, payload} = action;
-  const {date, time} = payload;
 
   switch (type) {
     case MODE.DATE:
-      return {...state, date};
+      return {...state, date: payload};
 
     case MODE.TIME:
-      return {...state, time};
+      return {...state, time: payload};
   }
 };
 

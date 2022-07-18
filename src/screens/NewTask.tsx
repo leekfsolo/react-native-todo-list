@@ -20,20 +20,19 @@ import CEvent from '../utils/CEvent';
 import {dateTimeReducer} from './reducer';
 import CDateTimePicker from '../components/CDateTimePicker';
 import {MODE} from './reducer/enum';
-import {formatDate, generateRandomId} from '../utils/helper';
+import {formatDate, formatTime, generateRandomId} from '../utils/helper';
 
 const initDateTime: DateTime = {
-  date: new Date(),
-  time: new Date(),
+  date: null,
+  time: null,
 };
 
 type Props = NativeStackScreenProps<MainStackParamList, 'NewTask'>;
 
 const NewTask = ({navigation}: Props) => {
   const [title, setTitle] = useState<string>('');
-  const [isDateTouched, setIsDateTouched] = useState<boolean>(false);
-  const [show, setShow] = useState<boolean>(false);
-  const [mode, setMode] = useState<MODE>(MODE.DATE);
+  const [dateShow, setDateShow] = useState<boolean>(false);
+  const [timeShow, setTimeShow] = useState<boolean>(false);
   const [dateTime, setDateTime] = useReducer(dateTimeReducer, initDateTime);
 
   const handleSubmit = async () => {
@@ -45,13 +44,12 @@ const NewTask = ({navigation}: Props) => {
       date: dateTime.date,
     };
 
-    try {
+    if (title.length > 0 && dateTime.date && dateTime.time) {
       CEvent.emit('addTask', task);
-    } catch (e: any) {
-      Alert.alert('Error', e.message, [{text: 'Ok'}]);
+      navigation.navigate('MyTasks');
+    } else {
+      Alert.alert('Error', 'Some of the inputs are not filled', [{text: 'Ok'}]);
     }
-
-    navigation.navigate('MyTasks');
   };
 
   return (
@@ -63,29 +61,48 @@ const NewTask = ({navigation}: Props) => {
           <TextInput
             placeholder="Enter your title"
             style={styles.titleInput}
-            autoFocus
             maxLength={50}
             value={title}
             onChangeText={value => setTitle(value)}
           />
-          <TouchableOpacity
-            onPress={() => setShow(true)}
-            style={styles.selectDate}>
-            <Text style={styles.dateText}>
-              {isDateTouched ? formatDate(dateTime) : 'Select due date'}
-            </Text>
-            {show && (
-              <CDateTimePicker
-                date={dateTime.date}
-                mode={mode}
-                setMode={setMode}
-                setShow={setShow}
-                setDateTime={setDateTime}
-                dateTime={dateTime}
-                setIsDateTouched={setIsDateTouched}
-              />
-            )}
-          </TouchableOpacity>
+          <View style={styles.dateTimeContainer}>
+            <TouchableOpacity
+              onPress={() => setDateShow(true)}
+              style={[styles.selectDT, styles.selectDate]}>
+              <Text style={styles.dateText}>
+                {dateTime.date
+                  ? `Date: ${formatDate(dateTime.date)}`
+                  : 'Select due date'}
+              </Text>
+              {dateShow && (
+                <CDateTimePicker
+                  date={dateTime.date}
+                  mode={MODE.DATE}
+                  setShow={setDateShow}
+                  setDateTime={setDateTime}
+                  dateTime={dateTime}
+                />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setTimeShow(true)}
+              style={[styles.selectDT, styles.selectTime]}>
+              <Text style={styles.dateText}>
+                {dateTime.time
+                  ? `Time: ${formatTime(dateTime.time)}`
+                  : 'Select due time'}
+              </Text>
+              {timeShow && (
+                <CDateTimePicker
+                  date={dateTime.time}
+                  mode={MODE.TIME}
+                  setShow={setTimeShow}
+                  setDateTime={setDateTime}
+                  dateTime={dateTime}
+                />
+              )}
+            </TouchableOpacity>
+          </View>
           <Pressable
             onPress={handleSubmit}
             style={({pressed}) => [
@@ -127,12 +144,23 @@ const styles = StyleSheet.create({
     color: Colors.blue900,
     fontWeight: '700',
   },
-  selectDate: {
+  dateTimeContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  selectDT: {
     backgroundColor: Colors.white,
     paddingHorizontal: 20,
     paddingVertical: 15,
     marginBottom: 20,
     borderRadius: 5,
+  },
+  selectDate: {
+    width: '48%',
+  },
+  selectTime: {
+    width: '48%',
   },
   titleInput: {
     backgroundColor: Colors.white,
