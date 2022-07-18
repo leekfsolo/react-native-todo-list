@@ -1,3 +1,6 @@
+import React, {useReducer, useState} from 'react';
+
+import DateTimePicker from '@react-native-community/datetimepicker';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {
   Alert,
@@ -9,28 +12,33 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
 import {MainStackParamList} from '../routes';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {Colors} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Task} from '../utils/model';
+import {DateTime, Task} from './reducer/model';
 import CEvent from '../utils/CEvent';
+import {dateTimeReducer} from './reducer';
+
+const initDateTime: DateTime = {
+  date: new Date(),
+  time: '12:00',
+};
 
 type Props = NativeStackScreenProps<MainStackParamList, 'NewTask'>;
 
 const NewTask = ({navigation}: Props) => {
   const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+  const [dateTime, setDateTime] = useReducer(dateTimeReducer, initDateTime);
 
   const handleSubmit = async () => {
     const task: Task = {
       title,
-      description,
     };
 
     try {
       const prevJsonTasks = await AsyncStorage.getItem('tasks');
+      await AsyncStorage.clear();
 
       if (prevJsonTasks === null) {
         await AsyncStorage.setItem('tasks', JSON.stringify([task]));
@@ -63,15 +71,7 @@ const NewTask = ({navigation}: Props) => {
             value={title}
             onChangeText={value => setTitle(value)}
           />
-          <TextInput
-            placeholder="Description"
-            multiline
-            style={styles.descriptionInput}
-            numberOfLines={6}
-            maxLength={50}
-            value={description}
-            onChangeText={value => setDescription(value)}
-          />
+          <DateTimePicker value={new Date()} mode="date" display="default" />
           <Pressable
             onPress={handleSubmit}
             style={({pressed}) => [

@@ -4,7 +4,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import CButton from '../components/CButton/CButton';
 import NoContent from '../components/NoContent/NoContent';
 import {MainStackParamList} from '../routes';
-import {Task} from '../utils/model';
+import {Task} from './reducer/model';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CEvent from '../utils/CEvent';
 
@@ -46,7 +46,6 @@ const MyTasks = ({navigation}: Props) => {
         tasks.map((task, idx) => (
           <View key={idx}>
             <Text>{task.title}</Text>
-            <Text>{task.description}</Text>
           </View>
         ))
       ) : (
